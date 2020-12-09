@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "240536524586",
+    "project_id": "babybilly-82524",
+    "storage_bucket": "babybilly-82524.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:240536524586:android:eeb3099b3f69f251623053",
+        "android_client_info": {
+          "package_name": "com.jimingoal.babybilly"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "240536524586-803idqug3tu15jm7jjvv00f7eg97ultm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwWclZBVbokxMnZrnyZtejHbx0wL18CPU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "240536524586-803idqug3tu15jm7jjvv00f7eg97ultm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
