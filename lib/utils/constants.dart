@@ -13,3 +13,10 @@ var headerStyle = GoogleFonts.roboto(
     fontWeight: FontWeight.bold,
   ),
 );
+
+var bodyStyle = GoogleFonts.roboto(
+  textStyle: TextStyle(
+    fontSize: 16.0,
+    fontWeight: FontWeight.bold,
+  ),
+);
