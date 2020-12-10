@@ -197,7 +197,12 @@ class _MyHomePageState extends State<CalendarScreen>
 
   Widget slideLeftBackground() {
     return Container(
-      color: Colors.red,
+      decoration: BoxDecoration(
+        border: Border.all(width: 0.8),
+        borderRadius: BorderRadius.circular(12.0),
+        color: Colors.red,
+      ),
+      // color: Colors.red,
       child: Align(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,

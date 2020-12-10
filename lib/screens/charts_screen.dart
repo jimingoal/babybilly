@@ -1,4 +1,5 @@
 import 'package:babybilly/screens/chartScreens/calendar_screen.dart';
+import 'package:babybilly/screens/chartScreens/diary_screen.dart';
 import 'package:babybilly/screens/chartScreens/todo_list_screen.dart';
 import 'package:babybilly/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,7 @@ class ChartsScreen extends StatelessWidget {
             TodoListScreen(),
             Container(color: Colors.yellow),
             CalendarScreen(),
-            Container(color: Colors.blue),
+            DiaryScreen(),
           ],
         ),
       ),
