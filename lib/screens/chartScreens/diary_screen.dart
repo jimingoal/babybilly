@@ -47,7 +47,7 @@ class DiaryScreen extends StatelessWidget {
                 groupBy: (element) => element.group,
                 groupComparator: (value1, value2) => value1.compareTo(value2),
                 itemComparator: (item1, item2) =>
-                    item1.title.compareTo(item2.title),
+                    item1.date.compareTo(item2.date),
                 order: GroupedListOrder.DESC,
                 useStickyGroupSeparators: true,
                 groupSeparatorBuilder: (String value) => Padding(

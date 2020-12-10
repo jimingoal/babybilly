@@ -6,6 +6,7 @@ import 'package:babybilly/widgets/diary_delete_popup.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -15,8 +16,12 @@ class DiaryEditScreen extends StatefulWidget {
 }
 
 class _DiaryEditScreenState extends State<DiaryEditScreen> {
-  final titleController = TextEditingController();
-  final contentController = TextEditingController();
+  final DateFormat _dateFormatter = DateFormat("yyyy-MM-dd");
+  final _titleController = TextEditingController();
+  final _contentController = TextEditingController();
+  final _dateController = TextEditingController();
+
+  DateTime _selectedDate = DateTime.now();
 
   File _image;
 
@@ -50,6 +55,27 @@ class _DiaryEditScreenState extends State<DiaryEditScreen> {
   //   }
   //   firstTime = false;
   // }
+
+  @override
+  void initState() {
+    super.initState();
+    _dateController.text = _dateFormatter.format(_selectedDate);
+  }
+
+  _handleDatePicker(BuildContext context) async {
+    DateTime date = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (date != null && date != _selectedDate) {
+      setState(() {
+        _selectedDate = date;
+      });
+      _dateController.text = _dateFormatter.format(date);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,11 +120,23 @@ class _DiaryEditScreenState extends State<DiaryEditScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            Container(
+              child: Padding(
+                padding: EdgeInsets.only(left: 10.0, right: 5.0, top: 5.0),
+                child: TextFormField(
+                    readOnly: true,
+                    controller: _dateController,
+                    onTap: () {
+                      _handleDatePicker(context);
+                    },
+                    style: createTitle,
+                    decoration: InputDecoration(border: InputBorder.none)),
+              ),
+            ),
             Padding(
-              padding: EdgeInsets.only(
-                  left: 10.0, right: 5.0, top: 10.0, bottom: 5.0),
+              padding: EdgeInsets.only(left: 10.0, right: 5.0, bottom: 5.0),
               child: TextField(
-                controller: titleController,
+                controller: _titleController,
                 maxLines: null,
                 textCapitalization: TextCapitalization.sentences,
                 style: createTitle,
@@ -154,7 +192,7 @@ class _DiaryEditScreenState extends State<DiaryEditScreen> {
               padding: const EdgeInsets.only(
                   left: 10.0, right: 5.0, top: 10.0, bottom: 5.0),
               child: TextField(
-                controller: contentController,
+                controller: _contentController,
                 maxLines: null,
                 style: createContent,
                 decoration: InputDecoration(
@@ -169,8 +207,8 @@ class _DiaryEditScreenState extends State<DiaryEditScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: blue,
         onPressed: () {
-          if (titleController.text.isEmpty)
-            titleController.text = 'Untitled Note';
+          if (_titleController.text.isEmpty)
+            _titleController.text = 'Untitled Note';
 
           saveDiary();
         },
@@ -197,8 +235,9 @@ class _DiaryEditScreenState extends State<DiaryEditScreen> {
   }
 
   void saveDiary() {
-    String title = titleController.text.trim();
-    String content = contentController.text.trim();
+    String title = _titleController.text.trim();
+    String content = _contentController.text.trim();
+    DateTime date = _selectedDate;
 
     String imagePath = _image != null ? _image.path : null;
 
@@ -207,16 +246,18 @@ class _DiaryEditScreenState extends State<DiaryEditScreen> {
         'title': title,
         'content': content,
         'imagePath': imagePath,
-        'date': DateTime.now(),
+        'date': date,
       });
 
       Navigator.of(this.context).pop();
     } else {
+      print('initDate: $_selectedDate');
+
       FirebaseFirestore.instance.collection('diary').add({
         'title': title,
         'content': content,
         'imagePath': imagePath,
-        'date': DateTime.now(),
+        'date': _selectedDate,
       });
       Navigator.of(this.context).pop();
       // Navigator.of(this.context)
