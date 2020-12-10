@@ -39,6 +39,7 @@ dependencies:
   path: ^1.7.0
   path_provider: ^1.6.18
   grouped_list: ^3.7.1
+  date_format: ^1.0.9
 
 dev_dependencies:
   flutter_test:

@@ -6,11 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
-import 'package:intl/intl.dart';
 
 class DiaryScreen extends StatelessWidget {
-  final DateFormat _dateFormatter = DateFormat("yyyy-MM-dd");
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -24,8 +21,8 @@ class DiaryScreen extends StatelessWidget {
           );
         } else {
           final documents = snapshot.data.docs;
-          List _elements = [];
 
+          List _elements = [];
           for (var doc in documents) {
             _elements.add(Diary(
               doc.id,
@@ -41,42 +38,43 @@ class DiaryScreen extends StatelessWidget {
             print('element: ${element.title}');
           }
 
-          return Scaffold(
-              body: GroupedListView<dynamic, String>(
-                elements: _elements,
-                groupBy: (element) => element.group,
-                groupComparator: (value1, value2) => value1.compareTo(value2),
-                itemComparator: (item1, item2) =>
-                    item1.date.compareTo(item2.date),
-                order: GroupedListOrder.DESC,
-                useStickyGroupSeparators: true,
-                groupSeparatorBuilder: (String value) => Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Text(
-                    '$value월',
-                    textAlign: TextAlign.start,
-                    style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
+          return SafeArea(
+            child: Scaffold(
+                body: GroupedListView<dynamic, String>(
+                  elements: _elements,
+                  groupBy: (element) => element.group,
+                  groupComparator: (value1, value2) => value1.compareTo(value2),
+                  itemComparator: (item1, item2) =>
+                      item1.date.compareTo(item2.date),
+                  order: GroupedListOrder.DESC,
+                  useStickyGroupSeparators: true,
+                  groupSeparatorBuilder: (String value) => Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Text(
+                      '$value월',
+                      textAlign: TextAlign.start,
+                      style:
+                          TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
+                    ),
                   ),
+                  itemBuilder: (c, diary) {
+                    return ListItem(
+                      diary,
+                      // element.id,
+                      // element.title,
+                      // element.content,
+                      // element.imagePath,
+                      // DateTime.parse(_dateFormatter.format(element.date)),
+                    );
+                  },
                 ),
-                itemBuilder: (c, element) {
-                  return ListItem(
-                    element.id,
-                    element.title,
-                    element.content,
-                    element.imagePath,
-                    DateTime.parse(_dateFormatter.format(element.date)),
-                  );
-                },
-              ),
-              floatingActionButton: FloatingActionButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => DiaryEditScreen()),
-                  );
-                },
-                child: Icon(Icons.add),
-              ));
+                floatingActionButton: FloatingActionButton(
+                  onPressed: () {
+                    goToDiaryEditScreen(context);
+                  },
+                  child: Icon(Icons.add),
+                )),
+          );
         }
       },
     );
@@ -106,11 +104,7 @@ class DiaryScreen extends StatelessWidget {
                       style: boldPlus,
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => DiaryEditScreen()),
-                          );
+                          goToDiaryEditScreen(context);
                         }),
                   TextSpan(text: '" 눌러 일기를 작성해 보세요.')
                 ]),
@@ -120,5 +114,13 @@ class DiaryScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void goToDiaryEditScreen(BuildContext context) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DiaryEditScreen(),
+        ));
   }
 }

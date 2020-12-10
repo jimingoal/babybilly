@@ -1,17 +1,23 @@
 import 'dart:io';
 
+import 'package:babybilly/models/diary_model.dart';
+import 'package:babybilly/screens/chartScreens/diary_view_screen.dart';
 import 'package:babybilly/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class ListItem extends StatelessWidget {
-  final String id;
-  final String title;
-  final String content;
-  final String imagePath;
-  final DateTime date;
+  final Diary diary;
 
-  ListItem(this.id, this.title, this.content, this.imagePath, this.date);
+  ListItem(this.diary);
+
+  // final String id;
+  // final String title;
+  // final String content;
+  // final String imagePath;
+  // final DateTime date;
+  //
+  // ListItem(this.id, this.title, this.content, this.imagePath, this.date);
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +27,12 @@ class ListItem extends StatelessWidget {
       margin: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       child: InkWell(
         onTap: () {
-          // Navigator.pushNamed(context, NoteViewScreen.route, arguments: id);
+          // Navigator.pushNamed(context, DiaryViewScreen.route, diary);
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DiaryViewScreen(diary: diary),
+              ));
         },
         child: Container(
           width: double.infinity,
@@ -49,7 +60,7 @@ class ListItem extends StatelessWidget {
                         child: Column(
                           children: [
                             Text(
-                              date.day.toString(),
+                              diary.date.day.toString(),
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
@@ -57,7 +68,7 @@ class ListItem extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              DateFormat('EEE').format(date),
+                              DateFormat('EEE').format(diary.date),
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
@@ -74,7 +85,7 @@ class ListItem extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            title,
+                            diary.title,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 2,
                             style: itemTitle,
@@ -87,7 +98,7 @@ class ListItem extends StatelessWidget {
                           ),
                           Expanded(
                             child: Text(
-                              content,
+                              diary.content,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: itemContentStyle,
@@ -99,7 +110,7 @@ class ListItem extends StatelessWidget {
                   ),
                 ),
               ),
-              if (imagePath != null)
+              if (diary.imagePath != null)
                 Row(
                   children: [
                     SizedBox(
@@ -112,7 +123,7 @@ class ListItem extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12.0),
                         image: DecorationImage(
                           image: FileImage(
-                            File(imagePath),
+                            File(diary.imagePath),
                           ),
                           fit: BoxFit.cover,
                         ),

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:babybilly/models/diary_model.dart';
+import 'package:babybilly/screens/chartScreens/diary_screen.dart';
 import 'package:babybilly/utils/constants.dart';
 import 'package:babybilly/widgets/diary_delete_popup.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,6 +12,10 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DiaryEditScreen extends StatefulWidget {
+  final Diary diary;
+
+  DiaryEditScreen({this.diary});
+
   @override
   _DiaryEditScreenState createState() => _DiaryEditScreenState();
 }
@@ -27,39 +32,19 @@ class _DiaryEditScreenState extends State<DiaryEditScreen> {
 
   final picker = ImagePicker();
 
-  bool firstTime = true;
   Diary selectedDiary;
-  int id;
-
-  // @override
-  // void didChangeDependencies() {
-  //   // TODO: implement didChangeDependencies
-  //   super.didChangeDependencies();
-  //
-  //   if (firstTime) {
-  //     id = ModalRoute.of(this.context).settings.arguments;
-  //
-  //     if (id != null) {
-  //       selectedNote = Provider.of<NoteProvider>(
-  //         this.context,
-  //         listen: false,
-  //       ).getNote(id);
-  //
-  //       titleController.text = selectedNote?.title;
-  //       contentController.text = selectedNote?.content;
-  //
-  //       if (selectedNote?.imagePath != null) {
-  //         _image = File(selectedNote.imagePath);
-  //       }
-  //     }
-  //   }
-  //   firstTime = false;
-  // }
 
   @override
   void initState() {
     super.initState();
+    selectedDiary = widget.diary;
+    _titleController.text = selectedDiary?.title;
+    _contentController.text = selectedDiary?.content;
     _dateController.text = _dateFormatter.format(_selectedDate);
+
+    if (selectedDiary?.imagePath != null) {
+      _image = File(selectedDiary.imagePath);
+    }
   }
 
   _handleDatePicker(BuildContext context) async {
@@ -108,7 +93,7 @@ class _DiaryEditScreenState extends State<DiaryEditScreen> {
             icon: Icon(Icons.delete),
             color: black,
             onPressed: () {
-              if (id != null) {
+              if (widget.diary != null) {
                 _showDialog();
               } else {
                 Navigator.pop(context);
@@ -124,13 +109,14 @@ class _DiaryEditScreenState extends State<DiaryEditScreen> {
               child: Padding(
                 padding: EdgeInsets.only(left: 10.0, right: 5.0, top: 5.0),
                 child: TextFormField(
-                    readOnly: true,
-                    controller: _dateController,
-                    onTap: () {
-                      _handleDatePicker(context);
-                    },
-                    style: createTitle,
-                    decoration: InputDecoration(border: InputBorder.none)),
+                  readOnly: true,
+                  controller: _dateController,
+                  onTap: () {
+                    _handleDatePicker(context);
+                  },
+                  style: createTitle,
+                  decoration: InputDecoration(border: InputBorder.none),
+                ),
               ),
             ),
             Padding(
@@ -148,7 +134,7 @@ class _DiaryEditScreenState extends State<DiaryEditScreen> {
               Container(
                 padding: EdgeInsets.all(10.0),
                 width: MediaQuery.of(context).size.width,
-                height: 250.0,
+                height: 300.0,
                 child: Stack(
                   children: [
                     Container(
@@ -165,8 +151,8 @@ class _DiaryEditScreenState extends State<DiaryEditScreen> {
                       child: Padding(
                         padding: EdgeInsets.all(12.0),
                         child: Container(
-                          height: 30.0,
-                          width: 30.0,
+                          height: 50.0,
+                          width: 50.0,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: Colors.white,
@@ -178,8 +164,9 @@ class _DiaryEditScreenState extends State<DiaryEditScreen> {
                               });
                             },
                             child: Icon(
-                              Icons.delete,
-                              size: 16.0,
+                              Icons.cancel_outlined,
+                              size: 18.0,
+                              color: Colors.red,
                             ),
                           ),
                         ),
@@ -237,31 +224,40 @@ class _DiaryEditScreenState extends State<DiaryEditScreen> {
   void saveDiary() {
     String title = _titleController.text.trim();
     String content = _contentController.text.trim();
-    DateTime date = _selectedDate;
 
     String imagePath = _image != null ? _image.path : null;
 
-    if (id != null) {
-      FirebaseFirestore.instance.collection('diary').add({
+    //update
+    if (widget.diary != null) {
+      print('update');
+      FirebaseFirestore.instance
+          .collection('diary')
+          .doc(widget.diary.id)
+          .update({
         'title': title,
         'content': content,
         'imagePath': imagePath,
-        'date': date,
+        'date': _selectedDate,
       });
-
-      Navigator.of(this.context).pop();
+      Navigator.pushReplacement(
+          this.context,
+          MaterialPageRoute(
+            builder: (context) => DiaryScreen(),
+          ));
     } else {
-      print('initDate: $_selectedDate');
-
+      //add
+      print('add');
       FirebaseFirestore.instance.collection('diary').add({
         'title': title,
         'content': content,
         'imagePath': imagePath,
         'date': _selectedDate,
       });
-      Navigator.of(this.context).pop();
-      // Navigator.of(this.context)
-      //     .pushReplacementNamed(DiaryEditScreen());
+      Navigator.pushReplacement(
+          this.context,
+          MaterialPageRoute(
+            builder: (context) => DiaryScreen(),
+          ));
     }
   }
 

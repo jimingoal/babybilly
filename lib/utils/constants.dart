@@ -9,6 +9,27 @@ const black2 = Color(0xFF424242);
 const grey = Color(0xFFEAEAEA);
 const grey2 = Color(0xFF6D6D6D);
 
+var largeBold = GoogleFonts.roboto(
+  textStyle: TextStyle(
+    fontSize: 18.0,
+    fontWeight: FontWeight.bold,
+  ),
+);
+
+var mediumBold = GoogleFonts.roboto(
+  textStyle: TextStyle(
+    fontSize: 15.0,
+    fontWeight: FontWeight.bold,
+  ),
+);
+
+var smallBold = GoogleFonts.roboto(
+  textStyle: TextStyle(
+    fontSize: 12.0,
+    fontWeight: FontWeight.bold,
+  ),
+);
+
 var headerStyle = GoogleFonts.roboto(
   textStyle: TextStyle(
     color: white,
@@ -61,9 +82,11 @@ var itemContentStyle = GoogleFonts.roboto(
 
 var createTitle = GoogleFonts.roboto(
     textStyle: TextStyle(
+  color: black,
   fontSize: 28.0,
   fontWeight: FontWeight.w900,
 ));
+
 var createContent = GoogleFonts.roboto(
   textStyle: TextStyle(
     letterSpacing: 1.0,
@@ -72,6 +95,17 @@ var createContent = GoogleFonts.roboto(
     fontWeight: FontWeight.w400,
   ),
 );
+
+var viewTitleStyle = GoogleFonts.roboto(
+  fontWeight: FontWeight.w900,
+  fontSize: 28.0,
+);
+
+var viewContentStyle = GoogleFonts.roboto(
+    letterSpacing: 1.0,
+    fontSize: 20.0,
+    height: 1.5,
+    fontWeight: FontWeight.w400);
 
 var shadow = [
   BoxShadow(
