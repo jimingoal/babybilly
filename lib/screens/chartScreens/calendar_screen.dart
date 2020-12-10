@@ -64,61 +64,79 @@ class _MyHomePageState extends State<CalendarScreen>
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          _buildTableCalendar(),
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: TextField(
-                  controller: _todoController,
-                ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('event').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return CircularProgressIndicator();
+          }
+          final documents = snapshot.data.docs;
+          final DateFormat _dateFormatter = DateFormat("yyyy-MM-dd");
+          print('documents: $documents');
+
+          _events = {};
+          DateTime dateTime;
+          for (var doc in documents) {
+            // print('doc: ${doc.id}');
+            // print('title: ${doc.data()['title']}');
+            // print('date: ${doc.data()['date'].toDate()}');
+            dateTime = DateTime.parse(
+                _dateFormatter.format(doc.data()['date'].toDate()));
+            List list = List();
+
+            if (_events[dateTime] != null) list = _events[dateTime];
+            print('list: $list');
+
+            print(
+                'Event(id: ${doc.id}, title: ${doc.data()['title']}, date: ${DateTime.parse(_dateFormatter.format(doc.data()['date'].toDate()))})');
+
+            list.add(Event(
+              id: doc.id,
+              title: doc.data()['title'],
+              date: doc.data()['date'].toDate(),
+            ));
+            _events[dateTime] = list;
+            // _events[dateTime].add(doc['title']);
+            // list.add(doc['title']);
+            print('now: ${DateTime.now()}');
+            print('_event: $_events');
+            print(
+                '_selectedDate: ${DateTime.parse(_dateFormatter.format(_selectedDate))}');
+            _selectedEvents =
+                _events[DateTime.parse(_dateFormatter.format(_selectedDate))] ??
+                    [];
+            print('_selectedEvents: $_selectedEvents');
+          }
+          return SafeArea(
+            child: Container(
+              height: size.height,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  _buildTableCalendar(),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: TextField(
+                          controller: _todoController,
+                        ),
+                      ),
+                      RaisedButton(
+                        child: Text('추가'),
+                        onPressed: () => _addEvent(Event(
+                            title: _todoController.text, date: _selectedDate)),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8.0),
+                  Expanded(child: _buildEventList()),
+                ],
               ),
-              RaisedButton(
-                child: Text('추가'),
-                onPressed: () => _addEvent(
-                    Event(title: _todoController.text, date: _selectedDate)),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8.0),
-          const SizedBox(height: 8.0),
-          StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance.collection('event').snapshots(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return CircularProgressIndicator();
-              }
-              final documents = snapshot.data.docs;
-              _events = {};
-              DateTime dateTime;
-              for (var doc in documents) {
-                dateTime = doc['date'].toDate();
-                List list = List();
-
-                if (_events[dateTime] != null) list = _events[dateTime];
-                print('list: $list');
-
-                list.add(doc['title']);
-                _events[dateTime] = list;
-                // _events[dateTime].add(doc['title']);
-                // list.add(doc['title']);
-                print('now: ${DateTime.now()}');
-                print('_event: $_events');
-                print('_selectedDate: $_selectedDate');
-                _selectedEvents = _events[_selectedDate.toLocal()] ?? [];
-
-                // DateTime.parse(
-                //       DateFormat('yyyy-MM-dd').format(_selectedDate))] ??
-                //   [];
-                print('_selectedEvents: $_selectedEvents');
-              }
-              return Expanded(child: _buildEventList());
-            },
-          ),
-        ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -126,6 +144,7 @@ class _MyHomePageState extends State<CalendarScreen>
   // Simple TableCalendar configuration (using Styles)
   Widget _buildTableCalendar() {
     return TableCalendar(
+      rowHeight: MediaQuery.of(context).size.height * 0.08,
       calendarController: _calendarController,
       events: _events,
       startingDayOfWeek: StartingDayOfWeek.sunday,
@@ -160,15 +179,15 @@ class _MyHomePageState extends State<CalendarScreen>
                 margin:
                     const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                 child: Dismissible(
+                  direction: DismissDirection.endToStart,
+                  key: Key(event.id),
                   onDismissed: (direction) {
-                    _deleteEvent(event.id);
+                    _deleteEvent(event);
                   },
-                  key: Key(event),
                   background: slideLeftBackground(),
-                  secondaryBackground: slideLeftBackground(),
                   child: ListTile(
-                    title: Text(event.toString()),
-                    onTap: () => print('$event tapped!'),
+                    title: Text(event.title),
+                    onTap: () => print('{$event.title} tapped!'),
                   ),
                 ),
               ))
@@ -215,7 +234,7 @@ class _MyHomePageState extends State<CalendarScreen>
   }
 
   // 할 일 삭제 메서드
-  void _deleteEvent(DocumentSnapshot doc) {
-    FirebaseFirestore.instance.collection('event').doc(doc.id).delete();
+  void _deleteEvent(Event event) {
+    FirebaseFirestore.instance.collection('event').doc(event.id).delete();
   }
 }
