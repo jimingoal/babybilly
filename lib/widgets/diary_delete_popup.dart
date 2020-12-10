@@ -1,9 +1,10 @@
+import 'package:babybilly/models/diary_model.dart';
 import 'package:flutter/material.dart';
 
-class DairyDeletePopUp extends StatelessWidget {
-  // final Note selectedNote;
-  //
-  // DeletePopUp(this.selectedNote);
+class DiaryDeletePopUp extends StatelessWidget {
+  final Diary selectedDairy;
+
+  DiaryDeletePopUp(this.selectedDairy);
 
   @override
   Widget build(BuildContext context) {

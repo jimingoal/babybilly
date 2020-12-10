@@ -1,9 +1,23 @@
 class Diary {
-  String id;
-  String title;
-  String content;
-  String imagePath;
-  String date;
+  String _id;
+  String _title;
+  String _content;
+  String _imagePath;
+  DateTime _date;
+  String _group;
 
-  Diary(this.id, this.title, this.content, this.imagePath, this.date);
+  Diary(this._id, this._title, this._content, this._imagePath, this._date,
+      this._group);
+
+  String get id => _id;
+
+  String get title => _title;
+
+  String get content => _content;
+
+  String get imagePath => _imagePath;
+
+  DateTime get date => _date;
+
+  String get group => _group;
 }

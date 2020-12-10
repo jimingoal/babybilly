@@ -1,13 +1,17 @@
 import 'dart:io';
 
-import 'package:babybilly/models/diary_model.dart';
 import 'package:babybilly/utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class ListItem extends StatelessWidget {
-  final Diary diary;
+  final String id;
+  final String title;
+  final String content;
+  final String imagePath;
+  final DateTime date;
 
-  ListItem(this.diary);
+  ListItem(this.id, this.title, this.content, this.imagePath, this.date);
 
   @override
   Widget build(BuildContext context) {
@@ -38,39 +42,61 @@ class ListItem extends StatelessWidget {
                   padding: EdgeInsets.symmetric(
                     vertical: 10.0,
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
                     children: [
-                      Text(
-                        diary.title,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                        style: itemTitle,
-                      ),
-                      SizedBox(
-                        height: 4.0,
-                      ),
-                      Text(
-                        diary.date,
-                        overflow: TextOverflow.ellipsis,
-                        style: itemDateStyle,
-                      ),
-                      SizedBox(
-                        height: 8.0,
-                      ),
-                      Expanded(
-                        child: Text(
-                          diary.content,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: itemContentStyle,
+                      Container(
+                        width: 50.0,
+                        child: Column(
+                          children: [
+                            Text(
+                              date.day.toString(),
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 30,
+                              ),
+                            ),
+                            Text(
+                              DateFormat('EEE').format(date),
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
                         ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                            style: itemTitle,
+                          ),
+                          SizedBox(
+                            height: 4.0,
+                          ),
+                          SizedBox(
+                            height: 8.0,
+                          ),
+                          Expanded(
+                            child: Text(
+                              content,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: itemContentStyle,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
               ),
-              if (diary.imagePath != null)
+              if (imagePath != null)
                 Row(
                   children: [
                     SizedBox(
@@ -83,7 +109,7 @@ class ListItem extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12.0),
                         image: DecorationImage(
                           image: FileImage(
-                            File(diary.imagePath),
+                            File(imagePath),
                           ),
                           fit: BoxFit.cover,
                         ),
