@@ -2,6 +2,7 @@ import 'package:babybilly/models/event_model.dart';
 import 'package:babybilly/screens/chartScreens/calendar_add_screen.dart';
 import 'package:babybilly/utils/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:day_night_time_picker/lib/daynight_timepicker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -28,6 +29,15 @@ class _MyHomePageState extends State<CalendarScreen>
     Color(0xFFCBE8DE),
     Color(0xFFFDE9B9),
   ];
+
+  TimeOfDay _time = TimeOfDay.now().replacing(minute: 30);
+  bool iosStyle = true;
+
+  void onTimeChanged(TimeOfDay newTime) {
+    setState(() {
+      _time = newTime;
+    });
+  }
 
   @override
   void initState() {
@@ -103,6 +113,9 @@ class _MyHomePageState extends State<CalendarScreen>
               id: doc.id,
               title: doc.data()['title'],
               date: doc.data()['date'].toDate(),
+              alarm: doc.data()['alarm'] == null
+                  ? null
+                  : doc.data()['alarm'].toDate(),
             ));
             _events[dateTime] = list;
             // _events[dateTime].add(doc['title']);
@@ -213,11 +226,46 @@ class _MyHomePageState extends State<CalendarScreen>
             },
             background: slideLeftBackground(),
             child: ListTile(
-              title: Text(
-                event.title,
-                style: mediumBold,
+              title: Row(
+                children: [
+                  Container(
+                    width: 190,
+                    child: Text(
+                      event.title,
+                      style: mediumBold,
+                    ),
+                  ),
+                  event.alarm != null
+                      ? Expanded(
+                          child: Text(
+                            '알람: ${DateFormat('hh:mm a').format(event.alarm)}',
+                            // '알람: ${event.alarm}',
+                            style: mediumBold,
+                          ),
+                        )
+                      : Container(),
+                ],
               ),
-              onTap: () => print('{$event.title} tapped!'),
+              onTap: () => print('${event.id} tapped!'),
+              trailing: IconButton(
+                icon: Icon(Icons.alarm),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    showPicker(
+                        context: context,
+                        value: _time,
+                        onChange: onTimeChanged,
+                        onChangeDateTime: (DateTime dateTime) {
+                          FirebaseFirestore.instance
+                              .collection('event')
+                              .doc(event.id)
+                              .update({
+                            'alarm': dateTime,
+                          });
+                        }),
+                  );
+                },
+              ),
             ),
           ),
         );
