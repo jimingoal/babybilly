@@ -4,10 +4,20 @@ import 'package:babybilly/screens/home_screen.dart';
 import 'package:babybilly/screens/pregnant_screen.dart';
 import 'package:babybilly/screens/settings_screen.dart';
 import 'package:babybilly/utils/constants.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+bool USE_FIRESTORE_EMULATOR = false;
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  if (USE_FIRESTORE_EMULATOR) {
+    FirebaseFirestore.instance.settings = Settings(
+        host: 'localhost:8080', sslEnabled: false, persistenceEnabled: false);
+  }
   runApp(MyApp());
 }
 
