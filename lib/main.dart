@@ -62,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       bottomNavigationBar: CurvedNavigationBar(
         key: _bottomNavigationKey,
-        index: 0,
+        index: _page,
         height: 75.0,
         items: <Widget>[
           Icon(Icons.pregnant_woman,

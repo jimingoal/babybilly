@@ -32,8 +32,6 @@ dependencies:
   cloud_firestore: ^0.14.4
   curved_navigation_bar: ^0.3.4
   google_fonts: ^1.1.0
-  sliding_up_panel: ^1.0.2
-  cached_network_image: ^2.0.0
   table_calendar: ^2.3.0
   image_picker: ^0.6.7+11
   path: ^1.7.0

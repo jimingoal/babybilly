@@ -1,4 +1,5 @@
 import 'package:babybilly/models/event_model.dart';
+import 'package:babybilly/screens/chartScreens/calendar_add_screen.dart';
 import 'package:babybilly/utils/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -154,7 +155,17 @@ class _MyHomePageState extends State<CalendarScreen>
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: blue,
-        onPressed: () {},
+        onPressed: () {
+          showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              builder: (context) => SingleChildScrollView(
+                      child: Container(
+                    padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom),
+                    child: CalendarAddScreen(_selectedDate),
+                  )));
+        },
         child: Icon(Icons.add),
       ),
     );
@@ -202,7 +213,10 @@ class _MyHomePageState extends State<CalendarScreen>
             },
             background: slideLeftBackground(),
             child: ListTile(
-              title: Text(event.title),
+              title: Text(
+                event.title,
+                style: mediumBold,
+              ),
               onTap: () => print('{$event.title} tapped!'),
             ),
           ),
