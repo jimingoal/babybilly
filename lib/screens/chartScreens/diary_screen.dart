@@ -40,40 +40,41 @@ class DiaryScreen extends StatelessWidget {
 
           return SafeArea(
             child: Scaffold(
-                body: GroupedListView<dynamic, String>(
-                  elements: _elements,
-                  groupBy: (element) => element.group,
-                  groupComparator: (value1, value2) => value1.compareTo(value2),
-                  itemComparator: (item1, item2) =>
-                      item1.date.compareTo(item2.date),
-                  order: GroupedListOrder.DESC,
-                  useStickyGroupSeparators: true,
-                  groupSeparatorBuilder: (String value) => Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Text(
-                      '$value월',
-                      textAlign: TextAlign.start,
-                      style:
-                          TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
-                    ),
+              body: GroupedListView<dynamic, String>(
+                elements: _elements,
+                groupBy: (element) => element.group,
+                groupComparator: (value1, value2) => value1.compareTo(value2),
+                itemComparator: (item1, item2) =>
+                    item1.date.compareTo(item2.date),
+                order: GroupedListOrder.DESC,
+                useStickyGroupSeparators: true,
+                groupSeparatorBuilder: (String value) => Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Text(
+                    '$value월',
+                    textAlign: TextAlign.start,
+                    style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
                   ),
-                  itemBuilder: (c, diary) {
-                    return ListItem(
-                      diary,
-                      // element.id,
-                      // element.title,
-                      // element.content,
-                      // element.imagePath,
-                      // DateTime.parse(_dateFormatter.format(element.date)),
-                    );
-                  },
                 ),
-                floatingActionButton: FloatingActionButton(
-                  onPressed: () {
-                    goToDiaryEditScreen(context);
-                  },
-                  child: Icon(Icons.add),
-                )),
+                itemBuilder: (c, diary) {
+                  return ListItem(
+                    diary,
+                    // element.id,
+                    // element.title,
+                    // element.content,
+                    // element.imagePath,
+                    // DateTime.parse(_dateFormatter.format(element.date)),
+                  );
+                },
+              ),
+              floatingActionButton: FloatingActionButton(
+                backgroundColor: blue,
+                onPressed: () {
+                  goToDiaryEditScreen(context);
+                },
+                child: Icon(Icons.add),
+              ),
+            ),
           );
         }
       },

@@ -46,12 +46,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _page = 0;
+  int _page = 1;
   GlobalKey _bottomNavigationKey = GlobalKey();
 
   List<Widget> _widgetOptions = <Widget>[
-    ChartsScreen(),
     PregnantScreen(),
+    ChartsScreen(),
     HomeScreen(),
     ChecklistScreen(),
     SettingsScreen(),

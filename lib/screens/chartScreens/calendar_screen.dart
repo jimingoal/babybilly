@@ -22,6 +22,12 @@ class _MyHomePageState extends State<CalendarScreen>
 
   var _todoController = TextEditingController();
 
+  List colors = [
+    Color(0xFFCBD2F7),
+    Color(0xFFCBE8DE),
+    Color(0xFFFDE9B9),
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -116,35 +122,46 @@ class _MyHomePageState extends State<CalendarScreen>
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   _buildTableCalendar(),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: TextField(
-                          controller: _todoController,
+                  const SizedBox(height: 8.0),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20.0),
+                          topRight: Radius.circular(20.0),
                         ),
                       ),
-                      RaisedButton(
-                        child: Text('추가'),
-                        onPressed: () => _addEvent(Event(
-                            title: _todoController.text, date: _selectedDate)),
-                      ),
-                    ],
+                      child: _selectedEvents.isNotEmpty
+                          ? Expanded(child: _buildEventList())
+                          : Center(
+                              child: Text(
+                                '오늘 일정이 없습니다.',
+                                style: TextStyle(
+                                  color: blue,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 25.0,
+                                ),
+                              ),
+                            ),
+                    ),
                   ),
-                  const SizedBox(height: 8.0),
-                  Expanded(child: _buildEventList()),
                 ],
               ),
             ),
           );
         },
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: blue,
+        onPressed: () {},
+        child: Icon(Icons.add),
+      ),
     );
   }
 
-  // Simple TableCalendar configuration (using Styles)
   Widget _buildTableCalendar() {
     return TableCalendar(
-      rowHeight: MediaQuery.of(context).size.height * 0.08,
       calendarController: _calendarController,
       events: _events,
       startingDayOfWeek: StartingDayOfWeek.sunday,
@@ -170,37 +187,35 @@ class _MyHomePageState extends State<CalendarScreen>
 
   Widget _buildEventList() {
     return ListView(
-      children: _selectedEvents
-          .map((event) => Container(
-                decoration: BoxDecoration(
-                  border: Border.all(width: 0.8),
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                child: Dismissible(
-                  direction: DismissDirection.endToStart,
-                  key: Key(event.id),
-                  onDismissed: (direction) {
-                    _deleteEvent(event);
-                  },
-                  background: slideLeftBackground(),
-                  child: ListTile(
-                    title: Text(event.title),
-                    onTap: () => print('{$event.title} tapped!'),
-                  ),
-                ),
-              ))
-          .toList(),
+      children: _selectedEvents.map((event) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Color(0xFFCBD2F7),
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+          child: Dismissible(
+            direction: DismissDirection.endToStart,
+            key: Key(event.id),
+            onDismissed: (direction) {
+              _deleteEvent(event);
+            },
+            background: slideLeftBackground(),
+            child: ListTile(
+              title: Text(event.title),
+              onTap: () => print('{$event.title} tapped!'),
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 
   Widget slideLeftBackground() {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(width: 0.8),
         borderRadius: BorderRadius.circular(12.0),
-        color: Colors.red,
+        color: Colors.red[200],
       ),
       // color: Colors.red,
       child: Align(

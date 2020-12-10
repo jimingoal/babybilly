@@ -23,11 +23,11 @@ class ChartsScreen extends StatelessWidget {
               unselectedLabelColor: Colors.black,
               unselectedLabelStyle: TextStyle(),
               tabs: [
-                Text('검사\n&증상'),
                 Text('체크\n리스트'),
-                Text('몸무게\n기록'),
                 Text('캘린더'),
                 Text('다이\n어리'),
+                Text('검사\n&증상'),
+                Text('몸무게\n기록'),
               ],
             ),
           ),
@@ -35,11 +35,11 @@ class ChartsScreen extends StatelessWidget {
         // TabVarView 구현. 각 탭에 해당하는 컨텐트 구성
         body: TabBarView(
           children: [
-            Container(color: Colors.red),
             TodoListScreen(),
-            Container(color: Colors.yellow),
             CalendarScreen(),
             DiaryScreen(),
+            Container(color: Colors.red),
+            Container(color: Colors.yellow),
           ],
         ),
       ),
