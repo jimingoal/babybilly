@@ -39,6 +39,7 @@ dependencies:
   grouped_list: ^3.7.1
   flutter_local_notifications: ^3.0.1+6
   day_night_time_picker: ^0.4.0
+  cron: ^0.2.4
 
 
 

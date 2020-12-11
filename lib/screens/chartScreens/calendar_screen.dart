@@ -1,9 +1,12 @@
+import 'package:babybilly/main.dart';
 import 'package:babybilly/models/event_model.dart';
 import 'package:babybilly/screens/chartScreens/calendar_add_screen.dart';
 import 'package:babybilly/utils/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cron/cron.dart';
 import 'package:day_night_time_picker/lib/daynight_timepicker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -23,6 +26,9 @@ class _MyHomePageState extends State<CalendarScreen>
   final DateFormat _dateFormatter = DateFormat("yyyy-MM-dd");
 
   var _todoController = TextEditingController();
+
+  Cron cron;
+  int alarmCount = 0;
 
   List colors = [
     Color(0xFFCBD2F7),
@@ -51,6 +57,7 @@ class _MyHomePageState extends State<CalendarScreen>
     );
 
     _animationController.forward();
+    _requestPermissions();
   }
 
   @override
@@ -77,6 +84,17 @@ class _MyHomePageState extends State<CalendarScreen>
   void _onCalendarCreated(
       DateTime first, DateTime last, CalendarFormat format) {
     print('CALLBACK: _onCalendarCreated');
+  }
+
+  void _requestPermissions() {
+    flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
   }
 
   @override
@@ -137,18 +155,40 @@ class _MyHomePageState extends State<CalendarScreen>
                 children: <Widget>[
                   _buildTableCalendar(),
                   const SizedBox(height: 8.0),
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[50],
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20.0),
-                          topRight: Radius.circular(20.0),
-                        ),
-                      ),
-                      child: _selectedEvents.isNotEmpty
-                          ? Expanded(child: _buildEventList())
-                          : Center(
+                  _selectedEvents != null
+                      ? Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[50],
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20.0),
+                                topRight: Radius.circular(20.0),
+                              ),
+                            ),
+                            child: _selectedEvents.isNotEmpty
+                                ? _buildEventList()
+                                : Center(
+                                    child: Text(
+                                      '오늘 일정이 없습니다.',
+                                      style: TextStyle(
+                                        color: blue,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 25.0,
+                                      ),
+                                    ),
+                                  ),
+                          ),
+                        )
+                      : Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[50],
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20.0),
+                                topRight: Radius.circular(20.0),
+                              ),
+                            ),
+                            child: Center(
                               child: Text(
                                 '오늘 일정이 없습니다.',
                                 style: TextStyle(
@@ -158,8 +198,8 @@ class _MyHomePageState extends State<CalendarScreen>
                                 ),
                               ),
                             ),
-                    ),
-                  ),
+                          ),
+                        ),
                 ],
               ),
             ),
@@ -220,7 +260,7 @@ class _MyHomePageState extends State<CalendarScreen>
           margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
           child: Dismissible(
             direction: DismissDirection.endToStart,
-            key: Key(event.id),
+            key: UniqueKey(),
             onDismissed: (direction) {
               _deleteEvent(event);
             },
@@ -236,21 +276,20 @@ class _MyHomePageState extends State<CalendarScreen>
                     ),
                   ),
                   event.alarm != null
-                      ? Expanded(
-                          child: Text(
-                            '알람: ${DateFormat('hh:mm a').format(event.alarm)}',
-                            // '알람: ${event.alarm}',
-                            style: mediumBold,
-                          ),
+                      ? Text(
+                          '알람: ${DateFormat('hh:mm a').format(event.alarm)}',
+                          // '알람: ${event.alarm}',
+                          style: mediumBold,
                         )
                       : Container(),
                 ],
               ),
               onTap: () => print('${event.id} tapped!'),
               trailing: IconButton(
+                color: event.alarm != null ? Colors.blue : Colors.grey,
                 icon: Icon(Icons.alarm),
                 onPressed: () {
-                  Navigator.of(context).push(
+                  Navigator.of(this.context).push(
                     showPicker(
                         context: context,
                         value: _time,
@@ -262,6 +301,9 @@ class _MyHomePageState extends State<CalendarScreen>
                               .update({
                             'alarm': dateTime,
                           });
+                          alarmCount++;
+                          print('alarmCount: $alarmCount');
+                          onCron(alarmCount, event.title.toString(), dateTime);
                         }),
                   );
                 },
@@ -318,5 +360,40 @@ class _MyHomePageState extends State<CalendarScreen>
   // 할 일 삭제 메서드
   void _deleteEvent(Event event) {
     FirebaseFirestore.instance.collection('event').doc(event.id).delete();
+  }
+
+  void onCron(int alarmCount, String title, DateTime dateTime) {
+    cron = Cron();
+    cron.schedule(
+        Schedule.parse(
+            '* ${dateTime.minute} ${dateTime.hour} ${dateTime.day} ${dateTime.month} *'),
+        () async {
+      _showNotification(alarmCount, title);
+    });
+    print('Corn Ended');
+  }
+
+  Future<void> offCron(String title) async {
+    await cron.close();
+    print('todayCron.close()');
+  }
+
+  Future<void> _showNotification(int alarmCount, String title) async {
+    const AndroidNotificationDetails android = AndroidNotificationDetails(
+        'your channel id', 'your channel name', 'your channel description',
+        importance: Importance.max, priority: Priority.high, showWhen: false);
+    const IOSNotificationDetails ios = IOSNotificationDetails();
+
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: android, iOS: ios);
+
+    await flutterLocalNotificationsPlugin.show(
+        alarmCount, title, null, platformChannelSpecifics,
+        payload: 'item x');
+  }
+
+  Future<void> _cancelNotification(int id) async {
+    await flutterLocalNotificationsPlugin.cancel(id);
+    print('_cancelNotification: $id');
   }
 }
