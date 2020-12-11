@@ -41,7 +41,7 @@ class _MyHomePageState extends State<CalendarScreen>
 
   void onTimeChanged(TimeOfDay newTime) {
     setState(() {
-      _time = newTime;
+      _time = TimeOfDay.now().replacing(minute: 30);
     });
   }
 
@@ -262,7 +262,22 @@ class _MyHomePageState extends State<CalendarScreen>
             direction: DismissDirection.endToStart,
             key: UniqueKey(),
             onDismissed: (direction) {
+              // print('_selectedEvents.length: ${_selectedEvents.length}');
+              // _deleteEvent(event);
+              // int index;
+              //
+              // for (var i = 0; i < _selectedEvents.length; i++) {
+              //   if (_selectedEvents[i].id == event.id) index = i;
+              // }
+              //
+              // print('index: $index');
+
               _deleteEvent(event);
+              // setState(() {
+              //   _selectedEvents.removeAt(index);
+              //   print('_selectedEvents.length: ${_selectedEvents.length}');
+              //   if (_selectedEvents.length == 0) _selectedEvents.clear();
+              // });
             },
             background: slideLeftBackground(),
             child: ListTile(
