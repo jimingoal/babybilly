@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:babybilly/models/diary_model.dart';
-import 'package:babybilly/screens/chartScreens/diary_screen.dart';
 import 'package:babybilly/utils/constants.dart';
 import 'package:babybilly/widgets/diary_delete_popup.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -197,7 +196,7 @@ class _DiaryEditScreenState extends State<DiaryEditScreen> {
           if (_titleController.text.isEmpty)
             _titleController.text = 'Untitled Note';
 
-          saveDiary();
+          saveDiary(context);
         },
         child: Icon(Icons.save),
       ),
@@ -221,7 +220,7 @@ class _DiaryEditScreenState extends State<DiaryEditScreen> {
     });
   }
 
-  void saveDiary() {
+  void saveDiary(context) {
     String title = _titleController.text.trim();
     String content = _contentController.text.trim();
 
@@ -239,11 +238,9 @@ class _DiaryEditScreenState extends State<DiaryEditScreen> {
         'imagePath': imagePath,
         'date': _selectedDate,
       });
-      Navigator.pushReplacement(
-          this.context,
-          MaterialPageRoute(
-            builder: (context) => DiaryScreen(),
-          ));
+
+      Navigator.pop(context);
+      Navigator.pop(context);
     } else {
       //add
       print('add');
@@ -253,11 +250,7 @@ class _DiaryEditScreenState extends State<DiaryEditScreen> {
         'imagePath': imagePath,
         'date': _selectedDate,
       });
-      Navigator.pushReplacement(
-          this.context,
-          MaterialPageRoute(
-            builder: (context) => DiaryScreen(),
-          ));
+      Navigator.pop(context);
     }
   }
 

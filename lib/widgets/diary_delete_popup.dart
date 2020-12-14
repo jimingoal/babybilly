@@ -1,5 +1,4 @@
 import 'package:babybilly/models/diary_model.dart';
-import 'package:babybilly/screens/chartScreens/diary_screen.dart';
 import 'package:babybilly/utils/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -28,11 +27,9 @@ class DiaryDeletePopUp extends StatelessWidget {
                 .collection('diary')
                 .doc(selectedDairy.id)
                 .delete();
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DiaryScreen(),
-                ));
+            // Navigator.pop(context);
+            int count = 0;
+            Navigator.of(context).popUntil((_) => count++ > 2);
           },
         ),
         TextButton(
